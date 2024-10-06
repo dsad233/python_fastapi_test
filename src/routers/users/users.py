@@ -1,21 +1,19 @@
 from src.utils.DB.database import Session
 from src.models.models import Users
 from src.routers.users.schema.usersSchema import UsersEdit
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from src.routers.auth.auth import hashPassword
-from src.middleware import tokenVerify
+from src.middleware.tokenVerify import vaildate_Token
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(vaildate_Token)])
 users = Session()
 
 
 # 유저 전체 조회
 @router.get('')
-async def getUser(req : Request):
+async def getUser():
     try:
-        await tokenVerify.vaildate_Token(req)
-
         findAll = users.query(Users).all()
         if(len(findAll) == 0):
             return JSONResponse(status_code= 404, content= "유저가 존재하지 않습니다.")
@@ -43,7 +41,7 @@ async def getOneUser(id : int):
 
 
 # 유저 정보 수정
-@router.put('/{id}')
+@router.patch('/{id}')
 async def updateUser(id : int, usersEdit : UsersEdit):
     try:
         findUser = users.query(Users).filter(Users.id == id).first()

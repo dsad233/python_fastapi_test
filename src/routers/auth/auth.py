@@ -1,10 +1,13 @@
 from src.utils.DB.database import Session
 from src.routers.auth.schema.authSchema import Register, Login
 from src.models.models import Users, Roles
-from fastapi import APIRouter, Response, Request
+from fastapi import APIRouter, Response, Depends
 from fastapi.responses import JSONResponse
 import bcrypt
 from src.middleware.jwt.jwtService import JWTService, JWTEncoder, JWTDecoder
+from typing import Annotated
+from src.middleware.tokenVerify import vaildate_Token
+
 
 
 router = APIRouter()
@@ -83,7 +86,7 @@ async def login(login : Login, res : Response):
 
 # 로그아웃
 @router.post('/logout')
-async def logout(res : Response):
+async def logout(res : Response, token : Annotated[Users, Depends(vaildate_Token)]):
     try:
         res.delete_cookie('authorization')
         return { "message" : "로그아웃 완료" }

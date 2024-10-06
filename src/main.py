@@ -4,6 +4,7 @@ from src.models import models
 from src.utils.DB.database import engine
 from src.routers.auth import auth
 from src.routers.users import users
+from src.routers.posts import posts
 
 SWAGGER_HEADERS = {
     "title": "SWAGGER UI 변경 테스트",
@@ -37,6 +38,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(posts.router, prefix="/posts", tags=["Posts"])
 
 
 if __name__ == "__main__":
